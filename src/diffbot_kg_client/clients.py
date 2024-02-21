@@ -29,6 +29,19 @@ class BaseDiffbotKGClient:
         resp = await self.s.get(str(url), params=params, headers=headers)
         return resp
 
+    async def coverage_report_by_id(self, report_id: str) -> DiffbotResponse:
+        """Download coverage report by report ID.
+
+        Args:
+            report_id (str): The report ID string.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        url = str(self.report_by_id_url).format(id=report_id)
+        resp = await self._get(url)
+        return resp
+
     async def coverage_report_by_query(self, query: str) -> DiffbotResponse:
         """Download coverage report by DQL query.
 
@@ -55,6 +68,19 @@ class BaseDiffbotKGClient:
         headers = {"content-type": "application/json"}
 
         resp = await self.s.post(str(url), params=params, headers=headers, json=json)
+        return resp
+
+    async def coverage_report_by_id(self, report_id: str) -> DiffbotResponse:
+        """Download coverage report by report ID.
+
+        Args:
+            report_id (str): The report ID string.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        url = str(self.report_by_id_url).format(id=report_id)
+        resp = await self._get(url)
         return resp
 
     async def coverage_report_by_query(self, query: str) -> DiffbotResponse:
@@ -87,6 +113,19 @@ class BaseDiffbotKGClient:
 
         return resp
 
+    async def coverage_report_by_id(self, report_id: str) -> DiffbotResponse:
+        """Download coverage report by report ID.
+
+        Args:
+            report_id (str): The report ID string.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        url = str(self.report_by_id_url).format(id=report_id)
+        resp = await self._get(url)
+        return resp
+
     async def coverage_report_by_query(self, query: str) -> DiffbotResponse:
         """Download coverage report by DQL query.
 
@@ -104,6 +143,7 @@ class BaseDiffbotKGClient:
 class DiffbotSearchClient(BaseDiffbotKGClient):
     search_url = BaseDiffbotKGClient.url / "dql"
     report_url = BaseDiffbotKGClient.url / "dql/report"
+    report_by_id_url = BaseDiffbotKGClient.url / "dql/report/{id}"
 
     async def search(self, params: dict) -> DiffbotResponse:
         """Search Dreport_urliffbot's Knowledge Graph.
@@ -116,6 +156,19 @@ class DiffbotSearchClient(BaseDiffbotKGClient):
         """
         resp = await self._post_or_put(self.search_url, params=params)
 
+        return resp
+
+    async def coverage_report_by_id(self, report_id: str) -> DiffbotResponse:
+        """Download coverage report by report ID.
+
+        Args:
+            report_id (str): The report ID string.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        url = str(self.report_by_id_url).format(id=report_id)
+        resp = await self._get(url)
         return resp
 
     async def coverage_report_by_query(self, query: str) -> DiffbotResponse:
@@ -138,6 +191,19 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
 
     async def enhance(self, params) -> DiffbotResponse:
         resp = await self._get(self.enhance_url, params=params)
+        return resp
+
+    async def coverage_report_by_id(self, report_id: str) -> DiffbotResponse:
+        """Download coverage report by report ID.
+
+        Args:
+            report_id (str): The report ID string.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        url = str(self.report_by_id_url).format(id=report_id)
+        resp = await self._get(url)
         return resp
 
     async def coverage_report_by_query(self, query: str) -> DiffbotResponse:
