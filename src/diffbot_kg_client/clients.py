@@ -29,6 +29,19 @@ class BaseDiffbotKGClient:
         resp = await self.s.get(str(url), params=params, headers=headers)
         return resp
 
+    async def coverage_report_by_query(self, query: str) -> DiffbotResponse:
+        """Download coverage report by DQL query.
+
+        Args:
+            query (str): The DQL query string.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        params = {"query": query}
+        resp = await self._get(self.report_url, params=params)
+        return resp
+
     async def _post(
         self, url: str | URL, params: dict | None = None
     ) -> DiffbotResponse:
@@ -42,6 +55,19 @@ class BaseDiffbotKGClient:
         headers = {"content-type": "application/json"}
 
         resp = await self.s.post(str(url), params=params, headers=headers, json=json)
+        return resp
+
+    async def coverage_report_by_query(self, query: str) -> DiffbotResponse:
+        """Download coverage report by DQL query.
+
+        Args:
+            query (str): The DQL query string.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        params = {"query": query}
+        resp = await self._get(self.report_url, params=params)
         return resp
 
     async def _post_or_put(self, url: str | URL, params: dict | None = None):
@@ -61,9 +87,23 @@ class BaseDiffbotKGClient:
 
         return resp
 
+    async def coverage_report_by_query(self, query: str) -> DiffbotResponse:
+        """Download coverage report by DQL query.
+
+        Args:
+            query (str): The DQL query string.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        params = {"query": query}
+        resp = await self._get(self.report_url, params=params)
+        return resp
+
 
 class DiffbotSearchClient(BaseDiffbotKGClient):
     search_url = BaseDiffbotKGClient.url / "dql"
+    report_url = BaseDiffbotKGClient.url / "dql/report"
 
     async def search(self, params: dict) -> DiffbotResponse:
         """Search Dreport_urliffbot's Knowledge Graph.
@@ -78,6 +118,19 @@ class DiffbotSearchClient(BaseDiffbotKGClient):
 
         return resp
 
+    async def coverage_report_by_query(self, query: str) -> DiffbotResponse:
+        """Download coverage report by DQL query.
+
+        Args:
+            query (str): The DQL query string.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        params = {"query": query}
+        resp = await self._get(self.report_url, params=params)
+        return resp
+
 
 class DiffbotEnhanceClient(BaseDiffbotKGClient):
     enhance_url = BaseDiffbotKGClient.url / "enhance"
@@ -85,6 +138,19 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
 
     async def enhance(self, params) -> DiffbotResponse:
         resp = await self._get(self.enhance_url, params=params)
+        return resp
+
+    async def coverage_report_by_query(self, query: str) -> DiffbotResponse:
+        """Download coverage report by DQL query.
+
+        Args:
+            query (str): The DQL query string.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        params = {"query": query}
+        resp = await self._get(self.report_url, params=params)
         return resp
 
     async def submit_bulk_enhance(self, params) -> DiffbotResponse:
