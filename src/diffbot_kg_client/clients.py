@@ -218,6 +218,14 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
         """
         params = {"query": query}
         resp = await self._get(self.report_url, params=params)
+class DiffbotEnhanceClient(BaseDiffbotKGClient):
+    enhance_url = BaseDiffbotKGClient.url / "enhance"
+    bulk_enhance_url = enhance_url / "bulk"
+    bulk_status_url = BaseDiffbotKGClient.url / "enhance/bulk/status"
+    bulk_job_status_url = BaseDiffbotKGClient.url / "enhance/bulk/{bulkjobId}/status"
+
+    async def enhance(self, params) -> DiffbotResponse:
+        resp = await self._get(self.enhance_url, params=params)
         return resp
 
     async def submit_bulk_enhance(self, params) -> DiffbotResponse:
@@ -232,3 +240,16 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
             DiffbotResponse: The response from the Diffbot API.
         """
         return await self._get(self.bulk_status_url)
+
+    async def poll_bulkjob_status(self, bulkjobId: str) -> DiffbotResponse:
+        """
+        Poll the status of an Enhance Bulkjob by its ID.
+
+        Args:
+            bulkjobId (str): The ID of the bulk job.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        url = str(self.bulk_job_status_url).format(bulkjobId=bulkjobId)
+        return await self._get(url)
