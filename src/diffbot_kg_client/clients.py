@@ -196,7 +196,21 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
         resp = await self._get(self.enhance_url, params=params)
         return resp
 
+    bulk_job_stop_url = BaseDiffbotKGClient.url / "enhance/bulk/{bulkjobId}/stop"
     ... # Other methods
+
+    async def stop_bulkjob(self, bulkjobId: str) -> DiffbotResponse:
+        """
+        Stop an active Enhance Bulkjob by its ID.
+
+        Args:
+            bulkjobId (str): The ID of the bulk job.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        url = str(self.bulk_job_stop_url).format(bulkjobId=bulkjobId)
+        return await self._get(url)
 
     async def download_single_bulkjob_result(self, bulkjobId: str, jobIdx: str) -> DiffbotResponse:
         """
@@ -252,7 +266,21 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
         resp = await self._get(self.enhance_url, params=params)
         return resp
 
+    bulk_job_stop_url = BaseDiffbotKGClient.url / "enhance/bulk/{bulkjobId}/stop"
     ... # Other methods
+
+    async def stop_bulkjob(self, bulkjobId: str) -> DiffbotResponse:
+        """
+        Stop an active Enhance Bulkjob by its ID.
+
+        Args:
+            bulkjobId (str): The ID of the bulk job.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+        url = str(self.bulk_job_stop_url).format(bulkjobId=bulkjobId)
+        return await self._get(url)
 
     async def download_single_bulkjob_result(self, bulkjobId: str, jobIdx: str) -> DiffbotResponse:
         """
