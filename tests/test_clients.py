@@ -69,7 +69,7 @@ class TestDiffbotEnhanceClient:
 
     # Returns a DiffbotResponse object when given a bulk enhance query.
     @pytest.mark.asyncio
-    async def test_mocked_bulk_enhance_query(self, mock):
+    async def test_mocked_create_bulkjob(self, mock):
         # Initialize the DiffbotSearchClient object
         client = DiffbotEnhanceClient(token="valid_token")
 
@@ -84,7 +84,7 @@ class TestDiffbotEnhanceClient:
         )
 
         # Call the bulk enhance method
-        response = await client.submit_bulk_enhance(params)
+        response = await client.create_bulkjob(params)
 
         # Assert that the response is an instance of DiffbotResponse
         assert isinstance(response, DiffbotResponse)

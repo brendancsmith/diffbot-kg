@@ -295,7 +295,7 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
         """
         url = str(self.single_bulkjob_result_url).format(bulkjobId=bulkjobId, jobIdx=jobIdx)
         return await self._get(url)
-    async def submit_bulk_enhance(self, params) -> DiffbotResponse:
+    async def create_bulkjob(self, params) -> DiffbotResponse:
         resp = await self._post(self.bulk_enhance_url, params=params)
         return resp
 
