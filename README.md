@@ -3,6 +3,13 @@ Diffbot Knowledge Graph Client
 
 ![](https://www.diffbot.com/assets/img/diffbot-logo-darkbg.svg)
 
+
+[![CodeFactor](https://www.codefactor.io/repository/github/brendancsmith/diffbot-kg/badge)](https://www.codefactor.io/repository/github/brendancsmith/diffbot-kg)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/brendancsmith/diffbot-kg/python-package.yml)
+![GitHub Release](https://img.shields.io/github/v/release/brendancsmith/diffbot-kg)
+![GitHub License](https://img.shields.io/github/license/brendancsmith/diffbot-kg)
+
+
 Description
 -----------
 
