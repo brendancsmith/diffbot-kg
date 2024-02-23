@@ -34,7 +34,7 @@ enhanced_entity = enhance_client.enhance({query='type:Organization name:Diffbot'
 Contributing
 ------------
 
-Contributions to this project are welcome.
+Contributions to this project are welcome. - see the CONTRIBUTING.md file for details.
 
 License
 -------
