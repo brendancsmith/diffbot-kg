@@ -12,14 +12,14 @@ Installation
 ------------
 
 ```sh
-pip install diffbot-kg-client
+pip install diffbot-kg
 ```
 
 Usage
 -----
 
 ```python
-from diffbot_kg_client import DiffbotSearchClient, DiffbotEnhanceClient
+from diffbot_kg import DiffbotSearchClient, DiffbotEnhanceClient
 
 search_client = DiffbotSearchClient('your_api_key')
 enhance_client = DiffbotEnhanceClient('your_api_key')

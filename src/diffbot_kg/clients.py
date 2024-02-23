@@ -3,7 +3,7 @@ from typing import Any
 
 from yarl import URL
 
-from diffbot_kg_client.session import DiffbotResponse, DiffbotSession
+from diffbot_kg.session import DiffbotResponse, DiffbotSession
 
 log = logging.getLogger(__name__)
 

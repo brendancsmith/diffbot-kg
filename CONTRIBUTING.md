@@ -2,13 +2,13 @@
 
 First off, thanks for taking the time to contribute!
 
-The following is a set of guidelines for contributing to `diffbot-kg-client`, which is hosted on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
+The following is a set of guidelines for contributing to `diffbot-kg`, which is hosted on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
 ### How Can I Contribute?
 
 #### Reporting Bugs
 
-This section guides you through submitting a bug report for `diffbot-kg-client`. Following these guidelines helps the maintainer and the community understand your report, reproduce the behavior, and find related reports.
+This section guides you through submitting a bug report for `diffbot-kg`. Following these guidelines helps the maintainer and the community understand your report, reproduce the behavior, and find related reports.
 
 - **Use a clear and descriptive title** for the issue to identify the problem.
 - **Provide a step-by-step description** of the suggested enhancement in as many details as possible.

@@ -54,7 +54,7 @@ class RetryableException(Exception):
     pass
 
 
-# TODO: should I make this a subclass of ClientSession?
+# TODO: Should this be a subclass of ClientSession?
 class DiffbotSession:
     """
     A class representing a session with the Diffbot API.
@@ -90,7 +90,6 @@ class DiffbotSession:
         after=after_log(log, logging.DEBUG),
     )
     async def _request(self, method, url, **kwargs) -> DiffbotResponse:
-        # TODO: Implement retries on [400, 422, 429, 500] status codes using Tenancity lib
         async with self._limiter:
             async with await self._session.request(method, url, **kwargs) as resp:
                 try:

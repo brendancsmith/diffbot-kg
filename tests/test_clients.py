@@ -2,8 +2,8 @@
 
 import pytest
 
-from diffbot_kg_client.clients import DiffbotEnhanceClient, DiffbotSearchClient
-from diffbot_kg_client.session import DiffbotResponse
+from diffbot_kg.clients import DiffbotEnhanceClient, DiffbotSearchClient
+from diffbot_kg.session import DiffbotResponse
 
 
 class TestDiffbotSearchClient:
