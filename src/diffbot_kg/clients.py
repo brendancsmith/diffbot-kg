@@ -9,75 +9,134 @@ log = logging.getLogger(__name__)
 
 
 class BaseDiffbotKGClient:
-    url = URL("https://kg.diffbot.com/kg/v3/")
+    """
+    Base class for Diffbot Knowledge Graph API clients.
+    """
 
-    def __init__(self, token, **kwargs) -> None:
-        for kwarg in kwargs:
-            if kwarg not in ["token", "useCache", "jsonmode", "size"]:
-                raise ValueError(f"Invalid kwarg: {kwarg}")
+    url = URL("https://kg.diffbot.com/kg/v3/", encoded=True)
+    param_keys = ["jsonmode", "nonCanonicalFacts", "size"]
 
-        self.default_params = {"token": token, **kwargs}
+    def __init__(self, token, **default_params) -> None:
+        """
+        Initializes a new instance of the BaseDiffbotKGClient class (only
+        callable by subclasses).
+
+        Args:
+            token (str): The API token for authentication.
+            **default_params: Default parameters for API requests.
+
+        Raises:
+            ValueError: If an invalid keyword argument is provided.
+        """
+
+        for param in default_params:
+            if param not in self.param_keys:
+                raise ValueError(f"Invalid param: {param}")
+
+        self.default_params = {"token": token, **default_params}
         self.s = DiffbotSession()
 
     def _merge_params(self, params) -> dict[str, Any]:
+        """
+        Merges the given parameters with the default parameters.
+
+        Args:
+            params (dict): The parameters to merge.
+
+        Returns:
+            dict: The merged parameters.
+        """
+
         params = params or {}
         params = {**self.default_params, **params}
         params = {k: v for k, v in params.items() if v is not None}
         return params
 
     async def _get(self, url: str | URL, params=None, headers=None) -> DiffbotResponse:
+        """
+        Sends a GET request to the Diffbot API.
+
+        Args:
+            url (str | URL): The URL to send the request to.
+            params (dict, optional): The query parameters for the request. Defaults to None.
+            headers (dict, optional): The headers for the request. Defaults to None.
+
+        Returns:
+            DiffbotResponse: The response from the API.
+        """
+
+        params = self._merge_params(params)
         resp = await self.s.get(str(url), params=params, headers=headers)
         return resp
 
     async def _post(
-        self, url: str | URL, params: dict | None = None
+        self, url: str | URL, params: dict | None = None, data: dict | None = None
     ) -> DiffbotResponse:
-        """POST request to Diffbot API as alternative to GET for large queries.
-        All params except token are placed in the body of the request."""
+        """
+        Sends a POST request to the Diffbot API.
+
+        Args:
+            url (str | URL): The URL to send the request to.
+            params (dict, optional): The query parameters for the request. Defaults to None.
+            data (dict, optional): The data for the request body. Defaults to None.
+
+        Returns:
+            DiffbotResponse: The response from the API.
+        """
+
+        params = self._merge_params(params)
 
         token = params.pop("token", None) if params else None
         json, params = params, {"token": token}
 
-        # headers = {"accept": "application/json", "content-type": "application/json"}
         headers = {"content-type": "application/json"}
 
         resp = await self.s.post(str(url), params=params, headers=headers, json=json)
         return resp
 
-    async def _post_or_put(self, url: str | URL, params: dict | None = None):
-        # Diffbot uses nginx, which has a 4096 byte limit on URL by default
-        # but there are other factors, so we'll play it safe.
-        # 250 chars == 2000 bytes
-        if params is None:
-            params = {}
-        else:
-            params = {k: v for k, v in params.items() if v is not None}
+    async def _get_or_post(self, url: str | URL, params: dict | None = None):
+        """
+        Sends a GET or POST request to the Diffbot API, depending on the length of the URL.
 
-        url_len = len(str(url % params))
-        if url_len > 250:
-            resp = await self._post(url, params=params)
-        else:
-            resp = await self._get(url, params=params)
+        Args:
+            url (str | URL): The URL to send the request to.
+            params (dict, optional): The query parameters for the request. Defaults to None.
 
-        return resp
+        Returns:
+            DiffbotResponse: The response from the API.
+        """
+
+        params = self._merge_params(params)
+
+        url_len = len(bytes(str(url % params), encoding="ascii"))
+
+        if url_len <= 3000:
+            return await self._get(url, params=params)
+        else:
+            return await self._post(url, params=params)
 
 
 class DiffbotSearchClient(BaseDiffbotKGClient):
+    """
+    A client for interacting with Diffbot's Knowledge Graph search API.
+    """
+
     search_url = BaseDiffbotKGClient.url / "dql"
-    report_url = BaseDiffbotKGClient.url / "dql/report"
-    report_by_id_url = BaseDiffbotKGClient.url / "dql/report/{id}"
+    report_url = search_url / "report"
+    report_by_id_url = report_url / "{id}"
 
     async def search(self, params: dict) -> DiffbotResponse:
-        """Search Dreport_urliffbot's Knowledge Graph.
+        """Search Diffbot's Knowledge Graph.
 
         Args:
             params (dict): Dict of params to send in request
 
         Returns:
-            response: requests.Response object
+            DiffbotResponse: The response from the Diffbot API.
         """
-        resp = await self._post_or_put(self.search_url, params=params)
 
+        # params["query"] = quote(params["query"], encoding="ascii")
+        resp = await self._get_or_post(self.search_url, params=params)
         return resp
 
     async def coverage_report_by_id(self, report_id: str) -> DiffbotResponse:
@@ -89,6 +148,7 @@ class DiffbotSearchClient(BaseDiffbotKGClient):
         Returns:
             DiffbotResponse: The response from the Diffbot API.
         """
+
         url = str(self.report_by_id_url).format(id=report_id)
         resp = await self._get(url)
         return resp
@@ -102,29 +162,58 @@ class DiffbotSearchClient(BaseDiffbotKGClient):
         Returns:
             DiffbotResponse: The response from the Diffbot API.
         """
+
+        # params = {"query": quote(query)}
         params = {"query": query}
         resp = await self._get(self.report_url, params=params)
         return resp
 
 
 class DiffbotEnhanceClient(BaseDiffbotKGClient):
+    """
+    A client for interacting with the Diffbot Enhance API.
+
+    This client provides methods for enhancing content using the Diffbot Enhance API,
+    managing bulk jobs, and retrieving job results and coverage reports.
+    """
+
     enhance_url = BaseDiffbotKGClient.url / "enhance"
-    bulk_enhance_url = enhance_url / "bulk"
-    bulk_status_url = BaseDiffbotKGClient.url / "enhance/bulk/status"
-    single_bulkjob_result_url = (
-        BaseDiffbotKGClient.url / "enhance/bulk/{bulkjobId}/{jobIdx}"
-    )
-    bulk_job_results_url = BaseDiffbotKGClient.url / "enhance/bulk/{bulkjobId}"
-    bulk_job_coverage_report_url = (
-        BaseDiffbotKGClient.url / "enhance/bulk/{bulkjobId}/coverage/{reportId}"
-    )
+    enhance_bulk_url = enhance_url / "bulk"
+    bulk_status_url = enhance_bulk_url / "status"
+    single_bulkjob_result_url = enhance_bulk_url / "{bulkjobId}/{jobIdx}"
+    bulk_job_results_url = enhance_bulk_url / "{bulkjobId}"
+    bulk_job_coverage_report_url = enhance_bulk_url / "{bulkjobId}/coverage/{reportId}"
+    bulk_job_stop_url = enhance_bulk_url / "{bulkjobId}/stop"
+
+    param_keys = BaseDiffbotKGClient.param_keys + ["refresh", "search", "useCache"]
 
     async def enhance(self, params) -> DiffbotResponse:
+        """
+        Enhance content using the Diffbot Enhance API.
+
+        Args:
+            params (dict): The parameters for enhancing the content.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+
         resp = await self._get(self.enhance_url, params=params)
         return resp
 
-    bulk_job_stop_url = BaseDiffbotKGClient.url / "enhance/bulk/{bulkjobId}/stop"
-    ...  # Other methods
+    async def create_bulkjob(self, params) -> DiffbotResponse:
+        """
+        Create a bulk job for enhancing multiple content items.
+
+        Args:
+            params (dict): The parameters for creating the bulk job.
+
+        Returns:
+            DiffbotResponse: The response from the Diffbot API.
+        """
+
+        resp = await self._post(self.enhance_bulk_url, params=params)
+        return resp
 
     async def stop_bulkjob(self, bulkjobId: str) -> DiffbotResponse:
         """
@@ -136,6 +225,7 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
         Returns:
             DiffbotResponse: The response from the Diffbot API.
         """
+
         url = str(self.bulk_job_stop_url).format(bulkjobId=bulkjobId)
         return await self._get(url)
 
@@ -152,14 +242,11 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
         Returns:
             DiffbotResponse: The response from the Diffbot API.
         """
+
         url = str(self.single_bulkjob_result_url).format(
             bulkjobId=bulkjobId, jobIdx=jobIdx
         )
         return await self._get(url)
-
-    async def create_bulkjob(self, params) -> DiffbotResponse:
-        resp = await self._post(self.bulk_enhance_url, params=params)
-        return resp
 
     async def list_bulkjobs_for_token(self) -> DiffbotResponse:
         """
@@ -168,6 +255,7 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
         Returns:
             DiffbotResponse: The response from the Diffbot API.
         """
+
         return await self._get(self.bulk_status_url)
 
     async def poll_bulkjob_status(self, bulkjobId: str) -> DiffbotResponse:
@@ -180,6 +268,7 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
         Returns:
             DiffbotResponse: The response from the Diffbot API.
         """
+
         url = str(self.bulk_status_url).format(bulkjobId=bulkjobId)
         return await self._get(url)
 
@@ -193,6 +282,7 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
         Returns:
             DiffbotResponse: The response from the Diffbot API.
         """
+
         url = str(self.bulk_job_results_url).format(bulkjobId=bulkjobId)
         return await self._get(url)
 
@@ -209,6 +299,7 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
         Returns:
             DiffbotResponse: The response from the Diffbot API.
         """
+
         url = str(self.bulk_job_coverage_report_url).format(
             bulkjobId=bulkjobId, reportId=reportId
         )

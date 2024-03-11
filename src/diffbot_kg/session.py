@@ -54,6 +54,10 @@ class RetryableException(Exception):
     pass
 
 
+class URLTooLongException(Exception):
+    pass
+
+
 # TODO: Should this be a subclass of ClientSession?
 class DiffbotSession:
     """
@@ -103,7 +107,19 @@ class DiffbotSession:
                             resp.reason,
                             resp.headers,
                         )
+
                         raise RetryableException from e
+
+                    elif resp.status == 414:
+                        log.debug(
+                            "URLTooLongException: %s (%s %s %s)",
+                            e,
+                            resp.status,
+                            resp.reason,
+                            resp.headers,
+                        )
+
+                        raise URLTooLongException from e
 
                     log.exception(
                         "%s (%s %s %s)", e, resp.status, resp.reason, resp.headers
