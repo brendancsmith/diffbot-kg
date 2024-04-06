@@ -1,10 +1,9 @@
 import logging
 from http import HTTPMethod
-from typing import Any, List, Self
+from typing import Self
 
 import aiohttp
 import aiolimiter
-from multidict import CIMultiDictProxy
 from tenacity import (
     after_log,
     retry,
@@ -13,41 +12,9 @@ from tenacity import (
     wait_random_exponential,
 )
 
+from diffbot_kg.models.response.base import BaseDiffbotResponse
+
 log = logging.getLogger(__name__)
-
-
-class DiffbotResponse:
-    """DiffbotResponse represents the response from a Diffbot API request.
-
-    It contains the response status, headers, and JSON content. Provides
-    convenience properties to access the 'data' and 'entities' portions
-    of the JSON content.
-
-    The create classmethod is the main constructor, which handles converting
-    an aiohttp response into a DiffbotResponse.
-    """
-
-    def __init__(
-        self, status: int, headers: CIMultiDictProxy[str], content: dict[str, Any]
-    ):
-        self.status = status
-        self.headers = headers
-        self.content = content
-
-    @property
-    def data(self) -> List[dict]:
-        return self.content["data"]
-
-    @property
-    def entities(self) -> List[dict]:
-        # Note: this class/method will not be compatible with facet queries
-        # (no entities returned)
-        return [d["entity"] for d in self.data]
-
-    @classmethod
-    async def create(cls, resp: aiohttp.ClientResponse) -> Self:
-        """Unpack an aiohttp response object and return a DiffbotResponse instance."""
-        return cls(resp.status, resp.headers, await resp.json())
 
 
 class RetryableException(Exception):
@@ -74,11 +41,11 @@ class DiffbotSession:
         self._session = aiohttp.ClientSession(headers=headers, timeout=timeout)
         self._limiter = aiolimiter.AsyncLimiter(max_rate=5, time_period=1)
 
-    async def get(self, url, **kwargs) -> DiffbotResponse:
+    async def get(self, url, **kwargs) -> BaseDiffbotResponse:
         resp = await self._request(HTTPMethod.GET, url, **kwargs)
         return resp
 
-    async def post(self, url, **kwargs) -> DiffbotResponse:
+    async def post(self, url, **kwargs) -> BaseDiffbotResponse:
         resp = await self._request(HTTPMethod.POST, url, **kwargs)
         return resp
 
@@ -93,7 +60,7 @@ class DiffbotSession:
         wait=wait_random_exponential(multiplier=0.5, min=2, max=30),
         after=after_log(log, logging.DEBUG),
     )
-    async def _request(self, method, url, **kwargs) -> DiffbotResponse:
+    async def _request(self, method, url, **kwargs) -> BaseDiffbotResponse:
         async with self._limiter:
             async with await self._session.request(method, url, **kwargs) as resp:
                 try:
@@ -126,7 +93,7 @@ class DiffbotSession:
                     )
                     raise e
 
-                return await DiffbotResponse.create(resp)
+                return await BaseDiffbotResponse.create(resp)
 
     async def __aenter__(self) -> Self:
         return self

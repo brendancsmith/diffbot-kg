@@ -23,5 +23,8 @@
     ".aider.*": true,
     ".python-version": true
   },
-  "explorerExclude.backup": {}
+  "explorerExclude.backup": {},
+  "python.testing.pytestArgs": ["tests"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }

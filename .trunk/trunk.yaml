@@ -20,7 +20,7 @@ lint:
     - linters: [ALL]
       paths:
         # Ignore generated files
-        - tests/functional/cassettes/*.yaml
+        - tests/functional/**/cassettes/*.yaml
   definitions:
     - name: bandit
       direct_configs: [bandit.yaml]
