@@ -1,6 +1,9 @@
 import logging
 import os
+import re
+import sys
 
+import aiohttp.client_exceptions
 import dotenv
 import pytest
 
@@ -35,3 +38,12 @@ def token():
 def suppress_aiohttp_output():
     log = logging.getLogger("aiohttp")
     log.setLevel(logging.CRITICAL + 1)
+
+    def my_except_hook(exctype, value, traceback):
+        if exctype == aiohttp.client_exceptions.ClientResponseError:
+            msg = str(value)
+            re.sub(os.environ.get("DIFFBOT_TOKEN", ""), "********", msg)
+        else:
+            sys.__excepthook__(exctype, value, traceback)
+
+    sys.excepthook = my_except_hook
