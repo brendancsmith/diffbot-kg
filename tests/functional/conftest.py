@@ -39,6 +39,10 @@ def suppress_aiohttp_output():
     log = logging.getLogger("aiohttp")
     log.setLevel(logging.CRITICAL + 1)
 
+    # sledgehammer approach. only an exception hook should be used instead,
+    # but cannot get it to work for the traceback
+    sys.tracebacklimit = 0
+
     def my_except_hook(exctype, value, traceback):
         if exctype == aiohttp.client_exceptions.ClientResponseError:
             token = os.environ.get("DIFFBOT_TOKEN", "")
