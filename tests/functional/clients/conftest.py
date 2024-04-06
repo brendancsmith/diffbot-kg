@@ -35,11 +35,3 @@ def token():
 def suppress_aiohttp_output():
     log = logging.getLogger("aiohttp")
     log.setLevel(logging.CRITICAL + 1)
-
-
-# @pytest.hookimpl(tryfirst=True)
-# def pytest_sanitize_hook(items):
-#     secrets = [token()]
-#     for item in items:
-#         for secret in secrets:
-#             item.add_marker(pytest.mark.sanitize(secret))
