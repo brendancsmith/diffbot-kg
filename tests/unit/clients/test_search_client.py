@@ -11,7 +11,6 @@ TOKEN = "fake_token"
 class TestDiffbotSearchClient:
     @pytest.fixture(scope="class")
     def client(self):
-        # trunk-ignore(bandit/B106)
         return DiffbotSearchClient(token=TOKEN)
 
     # Returns a DiffbotResponse object when given a search query.
