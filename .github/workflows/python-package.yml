@@ -16,6 +16,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: test
+    env:
+      DIFFBOT_TOKEN: ${{ secrets.DIFFBOT_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
