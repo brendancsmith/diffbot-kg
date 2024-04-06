@@ -41,8 +41,9 @@ def suppress_aiohttp_output():
 
     def my_except_hook(exctype, value, traceback):
         if exctype == aiohttp.client_exceptions.ClientResponseError:
-            msg = str(value)
-            re.sub(os.environ.get("DIFFBOT_TOKEN", ""), "********", msg)
+            token = os.environ.get("DIFFBOT_TOKEN", "")
+            value.message = re.sub(token, "********", str(value))
+            sys.__excepthook__(exctype, value, None)
         else:
             sys.__excepthook__(exctype, value, traceback)
 
