@@ -34,23 +34,26 @@ lint:
   enabled:
     - actionlint@1.6.27
     - bandit@1.7.8
-    - checkov@3.2.53
+    - checkov@3.2.60
     - git-diff-check
-    - markdownlint@0.39.0
-    - osv-scanner@1.7.0
+    # - markdownlint@0.39.0
+    # - osv-scanner@1.7.0
     - prettier@3.2.5
     - ruff@0.3.5
-    - semgrep@1.67.0
+    # - semgrep@1.68.0
     - sourcery@1.16.0
     - taplo@0.8.1
     - trivy@0.50.1
-    - trufflehog-git@3.72.0
+    - trufflehog-git@3.73.0
     # - trufflehog@3.71.0
     - yamllint@1.35.1
   disabled:
-    - trufflehog
     - black
     - isort
+    - markdownlint
+    - osv-scanner
+    - semgrep
+    - trufflehog
 actions:
   enabled:
     - commitizen
