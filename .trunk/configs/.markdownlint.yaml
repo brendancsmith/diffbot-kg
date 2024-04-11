@@ -5,6 +5,7 @@ bullet: false
 html: false
 indentation: false
 line_length: false
+no-alt-text: false
 no-duplicate-heading:
   siblings_only: true
 no-trailing-punctuation: false
