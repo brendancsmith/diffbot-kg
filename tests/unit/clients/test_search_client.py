@@ -19,7 +19,7 @@ class TestDiffbotSearchClient:
         # ARRANGE
 
         # Define the search query parameters
-        params = {"query": "your_search_query", "limit": 10}
+        params = {"query": "your_search_query", "size": 10}
 
         # Mock the _post_or_put method
         mocker.patch.object(
