@@ -30,10 +30,10 @@ class TestDiffbotEnhanceClient:
         response = await client.enhance(params)
 
         # ASSERT
-        assert DiffbotSession.get.is_called_with(
+        DiffbotSession.get.assert_called_with(
             DiffbotEnhanceClient.enhance_url,
-            params=params,
-            headers={"accept": "application/json"},
+            params={**params, "token": "valid_token"},
+            headers={}
         )
         assert isinstance(response, DiffbotEntitiesResponse)
         assert response.status == 200
@@ -56,10 +56,11 @@ class TestDiffbotEnhanceClient:
         response = await client.create_bulkjob(params)
 
         # ASSERT
-        assert DiffbotSession.post.is_called_with(
+        DiffbotSession.post.assert_called_with(
             DiffbotEnhanceClient.bulk_job_url,
-            params=params,
-            headers={"accept": "application/json"},
+            params={"token": "valid_token"},
+            headers={"content-type": "application/json"},
+            json=params
         )
         assert isinstance(response, DiffbotBulkJobCreateResponse)
         assert response.status == 202

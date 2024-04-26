@@ -37,7 +37,7 @@ class TestDiffbotSearchClient:
         DiffbotSession.get.assert_called_with(
             DiffbotSearchClient.search_url,
             params=params,
-            headers={"accept": "application/json"},
+            headers={},
         )
         assert isinstance(response, DiffbotEntitiesResponse)
         assert response.status == 200
