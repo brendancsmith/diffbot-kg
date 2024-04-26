@@ -125,6 +125,7 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
         url = self.bulk_job_coverage_report_url.human_repr().format(
             bulkjobId=bulkjobId, reportId=reportId
         )
+
         resp = await self._get(url)
         resp.__class__ = DiffbotCoverageReportResponse
         return cast(DiffbotCoverageReportResponse, resp)

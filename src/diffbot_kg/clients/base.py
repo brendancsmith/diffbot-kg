@@ -41,6 +41,8 @@ class BaseDiffbotKGClient:
 
         params = params or {}
         params = {**self.default_params, **params}
+
+        # sourcery skip: inline-immediately-returned-variable
         params = {k: v for k, v in params.items() if v is not None}
         return params
 
@@ -59,9 +61,11 @@ class BaseDiffbotKGClient:
             BaseDiffbotResponse: The response from the API.
         """
 
-        headers = {"accept": "application/json", **(headers or {})}
+        headers = headers or {}
 
         params = self._merge_params(params)
+
+        # sourcery skip: inline-immediately-returned-variable
         resp = await self.s.get(url, params=params, headers=headers)
         return resp
 
@@ -88,10 +92,10 @@ class BaseDiffbotKGClient:
 
         headers = {
             "content-type": "application/json",
-            "accept": "application/json",
             **(headers or {}),
         }
 
+        # sourcery skip: inline-immediately-returned-variable
         resp = await self.s.post(url, params=params, headers=headers, json=json)
         return resp
 

@@ -3,8 +3,8 @@ import time
 
 import pytest
 from aiohttp import ClientResponseError
-
 from diffbot_kg.clients.enhance import DiffbotEnhanceClient
+
 from tests.functional.conftest import (
     ORG2_ENTITY_ID,
     ORG2_NAME,
@@ -89,15 +89,21 @@ class TestDiffbotEnhanceClient:
 
         job_id = _get_job_id(request)
 
-        DELAY = 10
+        TIMEOUT = 60
+        BACKOFF_FACTOR = 1.5
+        backoff = 1
         start = time.time()
 
         # ACT
-        while time.time() - start <= DELAY:
+        while True:
             response = await client.bulkjob_status(job_id)
             if response.complete:
                 break
-            time.sleep(1)
+            elif time.time() - start > TIMEOUT:
+                pytest.fail("Bulk job status check did not complete in time")
+
+            time.sleep(backoff)
+            backoff *= BACKOFF_FACTOR
 
         # ASSERT
         assert response.status == 200
@@ -159,6 +165,41 @@ class TestDiffbotEnhanceClient:
         await client.close()
 
     @pytest.mark.asyncio
+    async def test_bulkjob_coverage_report(self, request, token: Secret):
+        # ARRANGE
+        client = DiffbotEnhanceClient(token=token.value)
+
+        job_id = _get_job_id(request)
+        report_id = request.config.cache.get("enhanceBulkJobCoverageReportId", None)
+        if report_id is None:
+            pytest.fail("Enhance bulk job coverage report ID not found in cache")
+
+
+        TIMEOUT = 60
+        BACKOFF_FACTOR = 1.5
+        backoff = 1
+        start = time.time()
+
+        # ACT
+        while True:
+            try:
+                response = await client.bulkjob_coverage_report(job_id, report_id)
+            except ClientResponseError as e:
+                if e.status == 400:
+                    time.sleep(backoff)
+                    backoff *= BACKOFF_FACTOR
+            else:
+                if response.status == 200:
+                    break
+                elif time.time() - start > TIMEOUT:
+                    pytest.fail("Bulk job coverage report did not generate in time")
+
+        # ASSERT
+        assert response.status == 200
+        assert len(response.content.strip().split("\n")) == 4
+
+
+    @pytest.mark.asyncio
     async def test_bulkjob_stop(self, request, token: Secret):
         # ARRANGE
         client = DiffbotEnhanceClient(token=token.value)
@@ -175,29 +216,3 @@ class TestDiffbotEnhanceClient:
 
         # TEARDOWN
         await client.close()
-
-    @pytest.mark.asyncio
-    async def test_bulkjob_coverage_report(self, request, token: Secret):
-        # ARRANGE
-        client = DiffbotEnhanceClient(token=token.value)
-
-        job_id = _get_job_id(request)
-        report_id = request.config.cache.get("enhanceBulkJobCoverageReportId", None)
-        if report_id is None:
-            pytest.fail("Enhance bulk job coverage report ID not found in cache")
-
-        DELAY = 10
-        start = time.time()
-
-        # ACT
-        while time.time() - start <= DELAY:
-            try:
-                response = await client.bulkjob_coverage_report(job_id, report_id)
-            except ClientResponseError:
-                time.sleep(1)
-            else:
-                break
-
-        # ASSERT
-        assert response.status == 200
-        assert len(response.content.strip().split("\n")) == 4

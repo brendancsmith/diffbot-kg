@@ -33,7 +33,7 @@ class TestDiffbotEnhanceClient:
         DiffbotSession.get.assert_called_with(
             DiffbotEnhanceClient.enhance_url,
             params={**params, "token": "valid_token"},
-            headers={"accept": "application/json"},
+            headers={}
         )
         assert isinstance(response, DiffbotEntitiesResponse)
         assert response.status == 200
@@ -59,7 +59,7 @@ class TestDiffbotEnhanceClient:
         DiffbotSession.post.assert_called_with(
             DiffbotEnhanceClient.bulk_job_url,
             params={"token": "valid_token"},
-            headers={"content-type": "application/json", "accept": "application/json"},
+            headers={"content-type": "application/json"},
             json=params
         )
         assert isinstance(response, DiffbotBulkJobCreateResponse)
