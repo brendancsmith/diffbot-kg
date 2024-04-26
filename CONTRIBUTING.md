@@ -27,15 +27,16 @@ Please follow these steps to have your contribution considered by the maintainer
 
 ### Python Styleguide
 
-- All Python must adhere to [PEP 8](https://www.python.org/dev/peps/pep-0008/).
-- Use type annotations according to [PEP 484](https://www.python.org/dev/peps/pep-0484/) and [PEP 526](https://www.python.org/dev/peps/pep-0526/).
-- Format your python code with [Black](https://github.com/ambv/black).
-- Lint your python code with [Ruff](https://github.com/jendrikseipp/ruff).
+- All Python must adhere to [PEP 8][PEP8].
+- Use type annotations according to [PEP 484][PEP484] and [PEP 526][PEP526].
+- Format and lint your python code with [Ruff](https://github.com/jendrikseipp/ruff).
 - Include docstrings and comments where appropriate.
 - Write tests for new features and bug fixes.
-
-To automatically format and lint your code on commit, run `pre-commit install` in the root of the repository.
 
 ## Attribution
 
 This Contributing guide is adapted from the [Contributing to Atom](https://github.com/atom/atom/blob/master/CONTRIBUTING.md) guide.
+
+[PEP8]: https://www.python.org/dev/peps/pep-0008/
+[PEP484]: https://www.python.org/dev/peps/pep-0484/
+[PEP526]: https://www.python.org/dev/peps/pep-0526/

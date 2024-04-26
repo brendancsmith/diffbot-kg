@@ -1,7 +1,8 @@
 from typing import Any
 
-from diffbot_kg.clients.session import BaseDiffbotResponse, DiffbotSession
 from yarl import URL
+
+from diffbot_kg.clients.session import BaseDiffbotResponse, DiffbotSession
 
 
 class BaseDiffbotKGClient:

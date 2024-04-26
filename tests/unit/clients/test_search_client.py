@@ -1,4 +1,5 @@
 import pytest
+
 from diffbot_kg.clients.search import DiffbotSearchClient
 from diffbot_kg.clients.session import DiffbotSession
 from diffbot_kg.models.response import DiffbotEntitiesResponse

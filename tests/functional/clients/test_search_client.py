@@ -1,6 +1,6 @@
 import pytest
-from diffbot_kg.clients.search import DiffbotSearchClient
 
+from diffbot_kg.clients.search import DiffbotSearchClient
 from tests.functional.conftest import ORG_ENTITY_ID, ORG_NAME, Secret
 
 
