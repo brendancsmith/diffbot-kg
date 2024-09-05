@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "diffbot-kg"
-version = "0.2.3"
+version = "0.2.4"
 description = "Python client for the Diffbot Knowledge Graph API."
 authors = ["Brendan C. Smith"]
 license = "MIT"
