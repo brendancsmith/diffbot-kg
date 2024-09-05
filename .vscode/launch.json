@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: Run Functional Tests (From Scratch)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "pytest",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTEST_CASSETTES_DIR": "${workspaceFolder}/tests/cassettes"
+      },
+      "preLaunchTask": "delete_cassettes"
+    }
+  ]
+}
