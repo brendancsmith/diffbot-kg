@@ -1,0 +1,88 @@
+# Pre-commit configuration file compatible with Trunk.io
+# See https://pre-commit.com for more information
+# See https://docs.trunk.io/check for Trunk.io integration
+
+default_language_version:
+  python: python3.12
+
+repos:
+  # Ruff - Python linter and formatter (replaces Black, isort, flake8, etc.)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.1
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  # Prettier - Code formatter for YAML, JSON, Markdown, etc.
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        types_or: [yaml, markdown, json]
+
+  # Standard pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-yaml
+        args: [--unsafe]  # Allow custom YAML tags
+        exclude: ^tests/functional/.*/cassettes/.*\.yaml$
+      - id: check-json
+      - id: check-toml
+      - id: end-of-file-fixer
+        exclude: ^tests/functional/.*/cassettes/.*\.yaml$
+      - id: trailing-whitespace
+        exclude: ^tests/functional/.*/cassettes/.*\.yaml$
+      - id: mixed-line-ending
+      - id: detect-private-key
+
+  # yamllint - YAML linter
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [-c, .trunk/configs/.yamllint.yaml]
+        exclude: ^tests/functional/.*/cassettes/.*\.yaml$
+
+  # markdownlint - Markdown linter
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.39.0
+    hooks:
+      - id: markdownlint
+        args: [-c, .trunk/configs/.markdownlint.yaml]
+
+  # Bandit - Python security linter
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.8
+    hooks:
+      - id: bandit
+        args: [-c, .trunk/configs/bandit.yaml, -r, .]
+        exclude: ^tests/
+
+  # TruffleHog - Secret scanning (Trunk.io handles this via trufflehog-pre-commit action)
+  # To enable, uncomment the following:
+  # - repo: https://github.com/trufflesecurity/trufflehog
+  #   rev: v3.74.0
+  #   hooks:
+  #     - id: trufflehog
+  #       args:
+  #         - git
+  #         - file://.
+  #         - --since-commit
+  #         - HEAD
+  #         - --only-verified
+  #         - --fail
+
+  # Commitlint - Commit message linting (Trunk.io handles this via commitlint action)
+  # To enable, uncomment and run: pre-commit install --hook-type commit-msg
+  # - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
+  #   rev: v9.16.0
+  #   hooks:
+  #     - id: commitlint
+  #       stages: [commit-msg]
+  #       additional_dependencies: ["@commitlint/config-conventional"]
