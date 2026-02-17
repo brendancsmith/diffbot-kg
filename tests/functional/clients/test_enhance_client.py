@@ -3,7 +3,7 @@ import time
 
 import pytest
 from aiohttp import ClientResponseError
-from diffbot_kg.clients.enhance import DiffbotEnhanceClient
+from diffbot_kg import DiffbotEnhanceClient
 
 from tests.functional.conftest import (
     ORG2_ENTITY_ID,

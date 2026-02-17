@@ -1,5 +1,5 @@
 import pytest
-from diffbot_kg.clients.enhance import DiffbotEnhanceClient
+from diffbot_kg.clients import DiffbotEnhanceClient
 from diffbot_kg.clients.session import DiffbotSession
 from diffbot_kg.models.response import DiffbotEntitiesResponse
 from diffbot_kg.models.response.base import BaseDiffbotResponse
