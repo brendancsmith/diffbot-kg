@@ -17,10 +17,42 @@ This section guides you through submitting a bug report for `diffbot-kg`. Follow
 - **Explain which behavior you expected to see instead and why.**
 - **Include screenshots and/or animated GIFs** which help demonstrate the steps or point out the part of Indeed Job Scraper which the suggestion is related to.
 
+### Development Setup
+
+#### Pre-commit Hooks
+
+This project uses [pre-commit](https://pre-commit.com/) hooks to automatically check code quality before commits. The configuration is compatible with [Trunk.io](https://trunk.io/).
+
+To set up pre-commit hooks:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+The hooks will automatically run on every commit. You can also run them manually:
+
+```bash
+# Run on all files
+pre-commit run --all-files
+
+# Run on specific files
+pre-commit run --files src/diffbot_kg/models.py
+```
+
+The pre-commit configuration includes:
+- **Ruff**: Python linting and formatting
+- **Prettier**: YAML, JSON, and Markdown formatting
+- **yamllint**: YAML linting
+- **markdownlint**: Markdown linting
+- **Bandit**: Python security checks
+- Standard checks: trailing whitespace, file endings, merge conflicts, etc.
+
 ### Pull Requests
 
 Please follow these steps to have your contribution considered by the maintainer:
 
+- Set up pre-commit hooks (see Development Setup above) to ensure code quality.
 - After you submit your pull request, verify that all status checks are passing.
 - While the maintainer reviews your PR, you can also ask for specific people to review your changes.
 - Once your pull request is created, it will be reviewed by the maintainer of the project. You may be asked to make changes to your pull request. There's always a chance your pull request won't be accepted.
