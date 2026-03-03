@@ -1,5 +1,3 @@
-from typing import cast
-
 from diffbot_kg.clients.base import BaseDiffbotKGClient
 from diffbot_kg.models.response import (
     DiffbotBulkJobCreateResponse,
@@ -28,7 +26,7 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
     bulk_job_coverage_report_url = bulk_job_url / "report/{bulkjobId}/{reportId}"
     bulk_job_stop_url = bulk_job_url / "{bulkjobId}/stop"
 
-    async def enhance(self, params) -> DiffbotEntitiesResponse:
+    async def enhance(self, params: dict | None = None) -> DiffbotEntitiesResponse:
         """
         Enhance content using the Diffbot Enhance API.
 
@@ -36,33 +34,31 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
             params (dict): The parameters for enhancing the content.
 
         Returns:
-            DiffbotResponse: The response from the Diffbot API.
+            DiffbotEntitiesResponse: The response from the Diffbot API.
         """
 
         resp = await self._get(self.enhance_url, params=params)
-        resp.__class__ = DiffbotEntitiesResponse
-        return cast(DiffbotEntitiesResponse, resp)
+        return DiffbotEntitiesResponse.from_base(resp)
 
     async def create_bulkjob(
-        self, json: list[dict], params=None
+        self, json: list[dict], params: dict | None = None
     ) -> DiffbotBulkJobCreateResponse:
         """
         Create a bulk job for enhancing multiple content items.
 
         Args:
-            data (list[dict]): The content items to enhance.
+            json (list[dict]): The content items to enhance.
             params (dict): The parameters for creating the bulk job.
 
         Returns:
-            DiffbotBulkJobResponse: The response from the Diffbot API.
+            DiffbotBulkJobCreateResponse: The response from the Diffbot API.
         """
 
         if json is None or not json:
             raise ValueError("data must be provided")
 
         resp = await self._post(self.bulk_job_url, params=params, json=json)
-        resp.__class__ = DiffbotBulkJobCreateResponse
-        return cast(DiffbotBulkJobCreateResponse, resp)
+        return DiffbotBulkJobCreateResponse.from_base(resp)
 
     async def bulkjob_status(self, bulkjobId: str) -> DiffbotBulkJobStatusResponse:
         """
@@ -72,25 +68,23 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
             bulkjobId (str): The ID of the bulk job.
 
         Returns:
-            DiffbotResponse: The response from the Diffbot API.
+            DiffbotBulkJobStatusResponse: The response from the Diffbot API.
         """
 
         url = self.bulk_job_status_url.human_repr().format(bulkjobId=bulkjobId)
         resp = await self._get(url)
-        resp.__class__ = DiffbotBulkJobStatusResponse
-        return cast(DiffbotBulkJobStatusResponse, resp)
+        return DiffbotBulkJobStatusResponse.from_base(resp)
 
     async def list_bulkjobs(self) -> DiffbotListBulkJobsResponse:
         """
         Poll the status of all Enhance Bulkjobs for a token.
 
         Returns:
-            DiffbotResponse: The response from the Diffbot API.
+            DiffbotListBulkJobsResponse: The response from the Diffbot API.
         """
 
         resp = await self._get(self.list_bulk_jobs_url)
-        resp.__class__ = DiffbotListBulkJobsResponse
-        return cast(DiffbotListBulkJobsResponse, resp)
+        return DiffbotListBulkJobsResponse.from_base(resp)
 
     async def bulkjob_results(self, bulkjobId: str) -> DiffbotBulkJobResultsResponse:
         """
@@ -100,13 +94,12 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
             bulkjobId (str): The ID of the bulk job.
 
         Returns:
-            DiffbotResponse: The response from the Diffbot API.
+            DiffbotBulkJobResultsResponse: The response from the Diffbot API.
         """
 
         url = self.bulk_job_results_url.human_repr().format(bulkjobId=bulkjobId)
         resp = await self._get(url)
-        resp.__class__ = DiffbotBulkJobResultsResponse
-        return cast(DiffbotBulkJobResultsResponse, resp)
+        return DiffbotBulkJobResultsResponse.from_base(resp)
 
     async def bulkjob_coverage_report(
         self, bulkjobId: str, reportId: str
@@ -119,7 +112,7 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
             reportId (str): The ID of the report.
 
         Returns:
-            DiffbotResponse: The response from the Diffbot API.
+            DiffbotCoverageReportResponse: The response from the Diffbot API.
         """
 
         url = self.bulk_job_coverage_report_url.human_repr().format(
@@ -127,8 +120,7 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
         )
 
         resp = await self._get(url)
-        resp.__class__ = DiffbotCoverageReportResponse
-        return cast(DiffbotCoverageReportResponse, resp)
+        return DiffbotCoverageReportResponse.from_base(resp)
 
     async def single_bulkjob_result(
         self,
@@ -150,12 +142,11 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
             bulkjobId=bulkjobId, jobIdx=jobIdx
         )
         resp = await self._get(url)
-        resp.__class__ = DiffbotEntitiesResponse
-        return cast(DiffbotEntitiesResponse, resp)
+        return DiffbotEntitiesResponse.from_base(resp)
 
     async def stop_bulkjob(
         self,
-        bulkJobId: str,
+        bulkjobId: str,
     ) -> DiffbotBulkJobStatusResponse:
         """
         Stop an active Enhance Bulkjob by its ID.
@@ -164,10 +155,9 @@ class DiffbotEnhanceClient(BaseDiffbotKGClient):
             bulkjobId (str): The ID of the bulk job.
 
         Returns:
-            DiffbotEntitiesResponse: The response from the Diffbot API.
+            DiffbotBulkJobStatusResponse: The response from the Diffbot API.
         """
 
-        url = self.bulk_job_stop_url.human_repr().format(bulkjobId=bulkJobId)
+        url = self.bulk_job_stop_url.human_repr().format(bulkjobId=bulkjobId)
         resp = await self._get(url)
-        resp.__class__ = DiffbotBulkJobStatusResponse
-        return cast(DiffbotBulkJobStatusResponse, resp)
+        return DiffbotBulkJobStatusResponse.from_base(resp)

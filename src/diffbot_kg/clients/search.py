@@ -1,5 +1,3 @@
-from typing import cast
-
 from diffbot_kg.clients.base import BaseDiffbotKGClient
 from diffbot_kg.models.response import (
     DiffbotCoverageReportResponse,
@@ -26,10 +24,8 @@ class DiffbotSearchClient(BaseDiffbotKGClient):
             DiffbotResponse: The response from the Diffbot API.
         """
 
-        # No change needed here; the issue will be addressed in the session handling
         resp = await self._get_or_post(self.search_url, params=params)
-        resp.__class__ = DiffbotEntitiesResponse
-        return cast(DiffbotEntitiesResponse, resp)
+        return DiffbotEntitiesResponse.from_base(resp)
 
     async def coverage_report_by_id(
         self, report_id: str
@@ -45,8 +41,7 @@ class DiffbotSearchClient(BaseDiffbotKGClient):
 
         url = str(self.report_by_id_url).format(id=report_id)
         resp = await self._get(url)
-        resp.__class__ = DiffbotCoverageReportResponse
-        return cast(DiffbotCoverageReportResponse, resp)
+        return DiffbotCoverageReportResponse.from_base(resp)
 
     async def coverage_report_by_query(
         self, query: str
@@ -62,5 +57,4 @@ class DiffbotSearchClient(BaseDiffbotKGClient):
 
         params = {"query": query}
         resp = await self._get(self.report_url, params=params)
-        resp.__class__ = DiffbotCoverageReportResponse
-        return cast(DiffbotCoverageReportResponse, resp)
+        return DiffbotCoverageReportResponse.from_base(resp)

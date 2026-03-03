@@ -16,9 +16,9 @@ class DiffbotBulkJobStatusResponse(BaseJsonDiffbotResponse):
         return self.content["content"]["job_id"]
 
     @property
-    def complete(self) -> str:
+    def complete(self) -> bool:
         return self.content["content"]["status"] == "COMPLETE"
 
     @property
-    def reports(self):
+    def reports(self) -> list[dict]:
         return self.content["content"]["reports"]

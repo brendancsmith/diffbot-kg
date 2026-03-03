@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Self
 
 from yarl import URL
 
@@ -12,7 +12,7 @@ class BaseDiffbotKGClient:
 
     url = URL("https://kg.diffbot.com/kg/v3/")
 
-    def __init__(self, token, **default_params) -> None:
+    def __init__(self, token: str, **default_params: Any) -> None:
         """
         Initializes a new instance of the BaseDiffbotKGClient class (only
         callable by subclasses).
@@ -26,9 +26,9 @@ class BaseDiffbotKGClient:
         """
 
         self.default_params = {"token": token, **default_params}
-        self.s = DiffbotSession()
+        self._session = DiffbotSession()
 
-    def _merge_params(self, params) -> dict[str, Any]:
+    def _merge_params(self, params: dict[str, Any] | None) -> dict[str, Any]:
         """
         Merges the given parameters with the default parameters.
 
@@ -42,12 +42,10 @@ class BaseDiffbotKGClient:
         params = params or {}
         params = {**self.default_params, **params}
 
-        # sourcery skip: inline-immediately-returned-variable
-        params = {k: v for k, v in params.items() if v is not None}
-        return params
+        return {k: v for k, v in params.items() if v is not None}
 
     async def _get(
-        self, url: str | URL, params=None, headers=None
+        self, url: str | URL, params: dict | None = None, headers: dict | None = None
     ) -> BaseDiffbotResponse:
         """
         Sends a GET request to the Diffbot API.
@@ -65,16 +63,14 @@ class BaseDiffbotKGClient:
 
         params = self._merge_params(params)
 
-        # sourcery skip: inline-immediately-returned-variable
-        resp = await self.s.get(url, params=params, headers=headers)
-        return resp
+        return await self._session.get(url, params=params, headers=headers)
 
     async def _post(
         self,
         url: str | URL,
         params: dict | None = None,
         json: dict | list[dict] | None = None,
-        headers=None,
+        headers: dict | None = None,
     ) -> BaseDiffbotResponse:
         """
         Sends a POST request to the Diffbot API.
@@ -82,7 +78,7 @@ class BaseDiffbotKGClient:
         Args:
             url (str | URL): The URL to send the request to.
             params (dict, optional): The query parameters for the request. Defaults to None.
-            data (dict, optional): The data for the request body. Defaults to None.
+            json (dict | list[dict], optional): The JSON data for the request body. Defaults to None.
 
         Returns:
             BaseDiffbotResponse: The response from the API.
@@ -95,9 +91,7 @@ class BaseDiffbotKGClient:
             **(headers or {}),
         }
 
-        # sourcery skip: inline-immediately-returned-variable
-        resp = await self.s.post(url, params=params, headers=headers, json=json)
-        return resp
+        return await self._session.post(url, params=params, headers=headers, json=json)
 
     async def _get_or_post(
         self, url: str | URL, params: dict | None = None
@@ -117,13 +111,21 @@ class BaseDiffbotKGClient:
 
         url_len = len(bytes(str(url % params), encoding="ascii"))
 
-        # sourcery skip: remove-unnecessary-else
         if url_len <= 3000:
-            return await self._get(url, params=params)
+            return await self._session.get(url, params=params, headers={})
         else:
             token = params.pop("token", None) if params else None
             json, params = params, {"token": token}
-            return await self._post(url, params=params, json=json)
+            headers = {"content-type": "application/json"}
+            return await self._session.post(
+                url, params=params, headers=headers, json=json
+            )
 
-    async def close(self):
-        await self.s.close()
+    async def close(self) -> None:
+        await self._session.close()
+
+    async def __aenter__(self) -> Self:
+        return self
+
+    async def __aexit__(self, *args: Any) -> None:
+        await self.close()

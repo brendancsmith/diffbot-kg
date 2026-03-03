@@ -25,7 +25,7 @@ class TestBaseDiffbotKGClient:
         assert client_with_defaults.default_params["nonCanonicalized"] == "true"
 
     def test_init_creates_session(self, client):
-        assert isinstance(client.s, DiffbotSession)
+        assert isinstance(client._session, DiffbotSession)
 
     def test_merge_params_adds_defaults(self, client):
         result = client._merge_params({"query": "test"})

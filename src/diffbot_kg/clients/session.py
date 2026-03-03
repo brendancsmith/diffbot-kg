@@ -1,6 +1,6 @@
 import logging
 from http import HTTPMethod
-from typing import Self
+from typing import Any, Self
 
 import aiohttp
 import aiolimiter
@@ -38,34 +38,33 @@ class DiffbotSession:
     def __init__(self) -> None:
         self._headers = {"accept": "application/json"}
         self._timeout = aiohttp.ClientTimeout(total=60, sock_connect=5)
+        self._session: aiohttp.ClientSession | None = None
 
         self.is_open = False
 
     async def open(self) -> Self:
-        self._session = aiohttp.ClientSession(headers=self._headers, timeout=self._timeout)
+        self._session = aiohttp.ClientSession(
+            headers=self._headers, timeout=self._timeout
+        )
         self._limiter = aiolimiter.AsyncLimiter(max_rate=5, time_period=1)
 
         self.is_open = True
         return self
 
-    async def get(self, url, **kwargs) -> BaseDiffbotResponse:
+    async def get(self, url: str, **kwargs: Any) -> BaseDiffbotResponse:
         if not self.is_open:
             await self.open()
 
-        # sourcery skip: inline-immediately-returned-variable
-        resp = await self._request(HTTPMethod.GET, url, **kwargs)
-        return resp
+        return await self._request(HTTPMethod.GET, url, **kwargs)
 
-    async def post(self, url, **kwargs) -> BaseDiffbotResponse:
+    async def post(self, url: str, **kwargs: Any) -> BaseDiffbotResponse:
         if not self.is_open:
             await self.open()
 
-        # sourcery skip: inline-immediately-returned-variable
-        resp = await self._request(HTTPMethod.POST, url, **kwargs)
-        return resp
+        return await self._request(HTTPMethod.POST, url, **kwargs)
 
     async def close(self) -> None:
-        if not self._session.closed:
+        if self._session is not None and not self._session.closed:
             await self._session.close()
 
         self.is_open = False
@@ -77,7 +76,9 @@ class DiffbotSession:
         wait=wait_random_exponential(multiplier=0.5, min=2, max=30),
         after=after_log(log, logging.DEBUG),
     )
-    async def _request(self, method, url, **kwargs) -> BaseDiffbotResponse:
+    async def _request(
+        self, method: str, url: str, **kwargs: Any
+    ) -> BaseDiffbotResponse:
         async with self._limiter:
             async with await self._session.request(method, url, **kwargs) as resp:
                 try:

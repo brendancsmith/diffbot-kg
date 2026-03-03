@@ -1,5 +1,3 @@
-from typing import List
-
 from diffbot_kg.models.response.base import BaseJsonDiffbotResponse
 
 
@@ -16,11 +14,11 @@ class DiffbotEntitiesResponse(BaseJsonDiffbotResponse):
     """
 
     @property
-    def data(self) -> List[dict]:
+    def data(self) -> list[dict]:
         return self.content["data"]
 
     @property
-    def entities(self) -> List[dict]:
+    def entities(self) -> list[dict]:
         # Note: this class/method will not be compatible with facet queries
         # (no entities returned)
         return [d["entity"] for d in self.data]

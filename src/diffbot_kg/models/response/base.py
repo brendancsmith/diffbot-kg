@@ -20,6 +20,11 @@ class BaseDiffbotResponse:
         self.content = content
 
     @classmethod
+    def from_base(cls, resp: "BaseDiffbotResponse") -> Self:
+        """Construct a subclass instance from an existing BaseDiffbotResponse."""
+        return cls(resp.status, resp.headers, resp.content)
+
+    @classmethod
     async def create(cls, resp: aiohttp.ClientResponse) -> Self:
         """Unpack an aiohttp response object and return a BaseDiffbotResponse instance."""
 
