@@ -174,7 +174,6 @@ class TestDiffbotEnhanceClient:
         if report_id is None:
             pytest.fail("Enhance bulk job coverage report ID not found in cache")
 
-
         TIMEOUT = 60
         BACKOFF_FACTOR = 1.5
         backoff = 1
@@ -197,7 +196,6 @@ class TestDiffbotEnhanceClient:
         # ASSERT
         assert response.status == 200
         assert len(response.content.strip().split("\n")) == 4
-
 
     @pytest.mark.asyncio
     async def test_bulkjob_stop(self, request, token: Secret):
