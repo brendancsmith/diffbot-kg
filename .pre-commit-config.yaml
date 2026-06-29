@@ -30,7 +30,7 @@ repos:
       - id: check-case-conflict
       - id: check-merge-conflict
       - id: check-yaml
-        args: [--unsafe]  # Allow custom YAML tags
+        args: [--unsafe] # Allow custom YAML tags
         exclude: ^tests/functional/.*/cassettes/.*\.yaml$
       - id: check-json
       - id: check-toml

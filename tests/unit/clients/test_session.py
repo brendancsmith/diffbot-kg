@@ -26,7 +26,9 @@ def _make_error_info(status):
     )
 
 
-def _make_response(status=200, content_type="application/json", json_data=None, headers=None):
+def _make_response(
+    status=200, content_type="application/json", json_data=None, headers=None
+):
     """Create a mock aiohttp response."""
     resp = MagicMock()
     resp.status = status
