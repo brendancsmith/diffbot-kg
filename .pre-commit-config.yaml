@@ -63,7 +63,8 @@ repos:
     rev: 1.7.8
     hooks:
       - id: bandit
-        args: [-c, .trunk/configs/bandit.yaml, -r, .]
+        # Scan only the files pre-commit passes (honors exclude); no -r . tree walk
+        args: [-c, .trunk/configs/bandit.yaml]
         exclude: ^tests/
 
   # TruffleHog - Secret scanning (Trunk.io handles this via trufflehog-pre-commit action)
