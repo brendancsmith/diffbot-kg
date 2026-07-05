@@ -41,6 +41,7 @@ pre-commit run --files src/diffbot_kg/models.py
 ```
 
 The pre-commit configuration includes:
+
 - **Ruff**: Python linting and formatting
 - **Prettier**: YAML, JSON, and Markdown formatting
 - **yamllint**: YAML linting

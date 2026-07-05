@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, PropertyMock
+from unittest.mock import AsyncMock
 
 import pytest
 from multidict import CIMultiDict, CIMultiDictProxy
@@ -19,7 +19,9 @@ def _mock_headers(extra=None):
     return CIMultiDictProxy(CIMultiDict(extra or {}))
 
 
-def _mock_aiohttp_response(content_type, json_data=None, text_data="", status=200, headers=None):
+def _mock_aiohttp_response(
+    content_type, json_data=None, text_data="", status=200, headers=None
+):
     resp = AsyncMock()
     resp.status = status
     resp.content_type = content_type
@@ -127,7 +129,9 @@ class TestDiffbotBulkJobStatusResponse:
         assert resp.jobId == "job-456"
 
     def test_complete_true(self):
-        content = {"content": {"job_id": "job-456", "status": "COMPLETE", "reports": []}}
+        content = {
+            "content": {"job_id": "job-456", "status": "COMPLETE", "reports": []}
+        }
         resp = DiffbotBulkJobStatusResponse(200, _mock_headers(), content)
 
         assert resp.complete is True
