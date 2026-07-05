@@ -33,6 +33,8 @@ repos:
         args: [--unsafe] # Allow custom YAML tags
         exclude: ^tests/functional/.*/cassettes/.*\.yaml$
       - id: check-json
+        # VS Code config files are JSONC (comments allowed); skip strict JSON parsing
+        exclude: ^\.vscode/.*\.json$
       - id: check-toml
       - id: end-of-file-fixer
         exclude: ^tests/functional/.*/cassettes/.*\.yaml$
@@ -61,7 +63,8 @@ repos:
     rev: 1.9.4
     hooks:
       - id: bandit
-        args: [-c, .trunk/configs/bandit.yaml, -r, .]
+        # Scan only the files pre-commit passes (honors exclude); no -r . tree walk
+        args: [-c, .trunk/configs/bandit.yaml]
         exclude: ^tests/
 
   # TruffleHog - Secret scanning (Trunk.io handles this via trufflehog-pre-commit action)
