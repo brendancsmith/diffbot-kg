@@ -89,7 +89,7 @@ class TestDiffbotEnhanceClient:
 
         job_id = _get_job_id(request)
 
-        TIMEOUT = 60
+        TIMEOUT = 300
         BACKOFF_FACTOR = 1.5
         backoff = 1
         start = time.time()
@@ -174,7 +174,7 @@ class TestDiffbotEnhanceClient:
         if report_id is None:
             pytest.fail("Enhance bulk job coverage report ID not found in cache")
 
-        TIMEOUT = 60
+        TIMEOUT = 300
         BACKOFF_FACTOR = 1.5
         backoff = 1
         start = time.time()
