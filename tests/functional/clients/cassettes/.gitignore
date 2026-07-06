@@ -1,1 +1,7 @@
+# VCR cassettes are intentionally not committed. The functional suite runs
+# against the live Diffbot API in CI (record_mode="new_episodes"), so tests
+# exercise the real service rather than replaying recordings. Do not commit
+# cassettes to make CI deterministic — live coverage is the intended behavior.
+# Flaky bulk-job timeouts are mitigated by the poll timeout in
+# test_enhance_client.py, not by pinning recordings.
 *
