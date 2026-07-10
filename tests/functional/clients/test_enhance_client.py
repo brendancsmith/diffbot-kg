@@ -181,17 +181,21 @@ class TestDiffbotEnhanceClient:
 
         # ACT
         while True:
+            if time.time() - start > TIMEOUT:
+                pytest.fail("Bulk job coverage report did not generate in time")
+
             try:
                 response = await client.bulkjob_coverage_report(job_id, report_id)
             except ClientResponseError as e:
-                if e.status == 400:
-                    time.sleep(backoff)
-                    backoff *= BACKOFF_FACTOR
+                # 400 means the report is still generating; anything else is
+                # unexpected and should surface rather than spin the loop.
+                if e.status != 400:
+                    raise
+                time.sleep(backoff)
+                backoff *= BACKOFF_FACTOR
             else:
                 if response.status == 200:
                     break
-                elif time.time() - start > TIMEOUT:
-                    pytest.fail("Bulk job coverage report did not generate in time")
 
         # ASSERT
         assert response.status == 200
