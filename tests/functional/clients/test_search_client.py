@@ -9,6 +9,9 @@ def client(token):
     yield DiffbotSearchClient(token=token.value)
 
 
+# Hits the live Diffbot API; retry a couple times so a transient hiccup
+# doesn't fail CI.
+@pytest.mark.flaky(reruns=2, reruns_delay=30)
 @pytest.mark.vcr(record_mode="new_episodes")
 @pytest.mark.usefixtures("suppress_aiohttp_output")
 class TestDiffbotSearchClient:

@@ -26,6 +26,11 @@ def _get_job_id(request):
     return job_id
 
 
+# These tests hit the live Diffbot API, and the bulk job can occasionally take
+# longer than the poll ceiling to finish (or queue). Retry the whole test a
+# couple times so a single slow job doesn't fail CI; the poll re-checks the
+# same cached job, which has had extra wall-clock to complete by the retry.
+@pytest.mark.flaky(reruns=2, reruns_delay=30)
 @pytest.mark.vcr(record_mode="new_episodes")
 @pytest.mark.usefixtures("suppress_aiohttp_output")
 class TestDiffbotEnhanceClient:
