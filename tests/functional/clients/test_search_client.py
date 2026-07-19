@@ -9,6 +9,11 @@ def client(token):
     yield DiffbotSearchClient(token=token.value)
 
 
+# Hits the live Diffbot API, so it can fail on a transient issue (a network
+# blip, or a slow / rate-limited response). Retry a couple times so those don't
+# redden CI; reruns=2 still surfaces any deterministic failure, which fails all
+# three attempts.
+@pytest.mark.flaky(reruns=2, reruns_delay=30)
 @pytest.mark.vcr(record_mode="new_episodes")
 @pytest.mark.usefixtures("suppress_aiohttp_output")
 class TestDiffbotSearchClient:
