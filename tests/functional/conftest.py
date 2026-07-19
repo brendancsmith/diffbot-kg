@@ -31,7 +31,16 @@ class Secret:
 def token():
     __tracebackhide__ = True
     dotenv.load_dotenv(override=True)
-    return Secret(os.environ.get("DIFFBOT_TOKEN"))
+    value = os.environ.get("DIFFBOT_TOKEN")
+    if not value:
+        pytest.fail(
+            "DIFFBOT_TOKEN is not set. The functional tests call the live Diffbot "
+            "API and require a valid token. Set it in a local .env file, or provide "
+            "it as a CI secret (an Actions secret for normal runs, a Dependabot "
+            "secret for Dependabot pull requests).",
+            pytrace=False,
+        )
+    return Secret(value)
 
 
 @pytest.fixture(scope="session", autouse=True)
