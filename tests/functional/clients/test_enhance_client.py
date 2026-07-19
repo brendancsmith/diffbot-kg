@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 
@@ -26,10 +27,13 @@ def _get_job_id(request):
     return job_id
 
 
-# These tests hit the live Diffbot API, and the bulk job can occasionally take
-# longer than the poll ceiling to finish (or queue). Retry the whole test a
-# couple times so a single slow job doesn't fail CI; the poll re-checks the
-# same cached job, which has had extra wall-clock to complete by the retry.
+# Every test in this class hits the live Diffbot API, so all of them are subject
+# to transient failures (a slow/queued bulk job, an occasional network blip).
+# Mark the whole class flaky so those transient failures are retried a couple
+# times instead of reddening CI. reruns=2 only rescues *non-deterministic*
+# failures — a real regression fails all three attempts and is still reported.
+# For the bulk-job polling tests specifically, the retry re-checks the same
+# cached job, which has had extra wall-clock to complete by then.
 @pytest.mark.flaky(reruns=2, reruns_delay=30)
 @pytest.mark.vcr(record_mode="new_episodes")
 @pytest.mark.usefixtures("suppress_aiohttp_output")
@@ -46,6 +50,9 @@ class TestDiffbotEnhanceClient:
         assert response.status == 200
         assert response.content["hits"] == 1
         assert response.entities[0]["id"] == ORG_ENTITY_ID
+
+        # TEARDOWN
+        await client.close()
 
     @pytest.mark.asyncio
     async def test_create_bulkjob(self, request, token: Secret):
@@ -107,7 +114,7 @@ class TestDiffbotEnhanceClient:
             elif time.time() - start > TIMEOUT:
                 pytest.fail("Bulk job status check did not complete in time")
 
-            time.sleep(backoff)
+            await asyncio.sleep(backoff)
             backoff *= BACKOFF_FACTOR
 
         # ASSERT
@@ -196,7 +203,7 @@ class TestDiffbotEnhanceClient:
                 # unexpected and should surface rather than spin the loop.
                 if e.status != 400:
                     raise
-                time.sleep(backoff)
+                await asyncio.sleep(backoff)
                 backoff *= BACKOFF_FACTOR
             else:
                 if response.status == 200:
@@ -205,6 +212,9 @@ class TestDiffbotEnhanceClient:
         # ASSERT
         assert response.status == 200
         assert len(response.content.strip().split("\n")) == 4
+
+        # TEARDOWN
+        await client.close()
 
     @pytest.mark.asyncio
     async def test_bulkjob_stop(self, request, token: Secret):
