@@ -10,5 +10,3 @@ class DiffbotListBulkJobsResponse(BaseJsonLinesDiffbotResponse):
     The create classmethod is the main constructor, which handles converting
     an aiohttp response into a DiffbotResponse.
     """
-
-    pass
