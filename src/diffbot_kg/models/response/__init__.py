@@ -5,9 +5,9 @@ from diffbot_kg.models.response.coverage_report import DiffbotCoverageReportResp
 from diffbot_kg.models.response.entities import DiffbotEntitiesResponse
 
 __all__ = [
-    "DiffbotEntitiesResponse",
-    "DiffbotCoverageReportResponse",
     "DiffbotBulkJobCreateResponse",
-    "DiffbotListBulkJobsResponse",
     "DiffbotBulkJobStatusResponse",
+    "DiffbotCoverageReportResponse",
+    "DiffbotEntitiesResponse",
+    "DiffbotListBulkJobsResponse",
 ]
